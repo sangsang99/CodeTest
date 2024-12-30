@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-public class Process {
+public class Main {
 
     public static void doProcess(BufferedReader br, BufferedWriter bw) throws IOException {
         int lineCnt = Integer.parseInt(br.readLine());
@@ -16,27 +16,22 @@ public class Process {
                 continue;
             } else if (A > B) {
                 // A == Bigger;
+                // B == Smaller;
             } else if (A < B) {
                 int temp = A;
                 A = B;
-                B = temp; // small
+                B = temp;
             }
 
             List<Integer> divList = getDivs(A);
             Collections.sort(divList);
 
-            for (int com = 1; com <= divList.size(); com++) {
-
-            }
             for (Integer div : divList) {
-                bw.write(div + ", ");
                 if ((B * div) % A == 0) {
-                    // bw.write(B * div + "\n");
+                    bw.write(B * div + "\n");
                     break;
                 }
             }
-
-            bw.write("\n");
         }
     }
 
@@ -85,8 +80,7 @@ public class Process {
     public static void main(String[] args) throws IOException {
 
         // BufferedReader와 BufferedWriter 설정
-        BufferedReader br = new BufferedReader(
-                new InputStreamReader(new FileInputStream("DivMulPrm2/1934_최소공배수/data.txt")));
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("./data.txt")));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         // 처리 실행
