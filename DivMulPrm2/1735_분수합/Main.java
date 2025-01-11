@@ -6,77 +6,42 @@ public class Main {
     public static void doProcess(BufferedReader br, BufferedWriter bw) throws IOException {
 
         StringTokenizer st = new StringTokenizer(br.readLine());
-        long A = Long.parseLong(st.nextToken());
-        long B = Long.parseLong(st.nextToken());
+        int numeA = Integer.parseInt(st.nextToken());
+        int denoA = Integer.parseInt(st.nextToken());
+        st = new StringTokenizer(br.readLine());
+        int numeB = Integer.parseInt(st.nextToken());
+        int denoB = Integer.parseInt(st.nextToken());
+        
+        int LCM = getLCM(denoA, denoB);
 
-        if (A == B) {
-            bw.write(A + "\n");
-        } else if (A > B) {
-            // A == Bigger;
-            // B == Smaller;
-        } else if (A < B) {
-            long temp = A;
-            A = B;
-            B = temp;
-        }
+        int numeSum = numeA * (LCM/denoA) + numeB * (LCM/denoB);
+        int denoSum = LCM;
 
-        List<Long> divList = getDivs(A);
-        Collections.sort(divList);
-
-        for (long div : divList) {
-            if ((B * div) % A == 0) {
-                bw.write(B * div + "\n");
-                break;
-            }
-        }
+        int GCDsum = getGCD(numeSum, denoSum);
+        bw.write(numeSum/GCDsum + " " + denoSum/GCDsum);
     }
 
-    public static List<Long> getMinDivs(long num) {
-        List<Long> divList = new ArrayList<>();
-        long target = num;
-        long div = 2;
-
-        while (target > 0) {
-            long remain = target % div;
-            if (remain == 0) {
-                divList.add(div);
-                target = target / div;
-                div = 2;
-            } else {
-                div++;
-            }
-            if (target == 1) {
-                // divList.add(1); // 1을 약수집합에 넣으려면
-                break;
-            }
+    // 유클리드 호제법 (Euclidean Algorithm)
+    private static int getGCD(int a, int b) {
+        while (b != 0) {
+            int temp = a % b;
+            a = b;
+            b = temp;
         }
-
-        return divList;
+        return a;
     }
+    
 
-    public static List<Long> getDivs(long num) {
-        List<Long> divList = new ArrayList<>();
-        long div = 2;
-
-        while (div <= num) {
-            long remain = num % div;
-            if (remain == 0) {
-                divList.add(div);
-            }
-            div++;
-            if (num == 1) {
-                divList.add(1L); // 1을 약수집합에 넣으려면
-                break;
-            }
-        }
-
-        return divList;
+    public static int getLCM(int numA, int numB) {
+        int LCM = numA * numB / getGCD(numA, numB);
+        return LCM;
     }
 
     public static void main(String[] args) throws IOException {
 
         // BufferedReader와 BufferedWriter 설정
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("./data.txt")));
+        // BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         // 처리 실행
