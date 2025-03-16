@@ -24,105 +24,103 @@ public class Main {
         int guide = cardSets[0];
 
         while (oldCircle.size() > 1) {
+            bw.write("++++++++++++++++++++++++++++\n");
             int oldCircleSize = oldCircle.size();
             boolean beforeGuide = true;
-            for (int a = 1; a <= oldCircleSize && guide > 0; a++) {
-                bw.write("a: " + a + " guide: " + guide + "\n");
-                if (oldCircle.size() > 0 && a != guide) {
-                    if (beforeGuide) {
-                        newCircle.addFirst(oldCircle.pollFirst());
-                    } else {
-                        newCircle.addLast(oldCircle.pollLast());
-                    }
-                } else if (oldCircle.size() > 0 && a == guide) {
-                    int pop = oldCircle.pollFirst();
-                    permut.add(pop);
-                    guide = cardSets[pop - 1];
-                    beforeGuide = false;
-                }
-
-                if (a == guide && oldCircle.size() == 0 && beforeGuide)  {
-                    int[] move = { guide % newCircle.size() };
-                    int[] tempGuide = { guide };
-                    if (move[0] == 0) {
-                        move[0] = newCircle.size();
-                    }
-                    newCircle.stream().forEach((i) -> {
-                        move[0]--;
-                        if (move[0] == 0) {
-                            permut.add(i);
-                            tempGuide[0] = cardSets[i - 1];
+            if (guide > 0) {
+                for (int a = 1; a <= oldCircleSize; a++) {
+                    if (oldCircle.size() > 0 && a != guide) {
+                        if (beforeGuide) {
+                            newCircle.addFirst(oldCircle.pollFirst());
+                        } else {
+                            newCircle.addLast(oldCircle.pollLast());
                         }
-                    });
-                    guide = tempGuide[0];
-                    beforeGuide = false;
-                }
-            }
-            if (!beforeGuide) {
-                newCircle.stream().forEach((i) -> {
-                    try {
-                        bw.write(i + " ");
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                    } else if (oldCircle.size() > 0 && a == guide) {
+                        int pop = oldCircle.pollFirst();
+                        permut.add(pop);
+                        guide = cardSets[pop - 1];
+                        beforeGuide = false;
                     }
-                });
-    
-                bw.write(" / last: " + permut.peekLast() + " guide: " + guide + "\n");
-                bw.write("\n");
-                oldCircle = newCircle;
-                continue;
-            }
-            for (int b = -1; b >= -oldCircleSize && guide < 0; b--) {
 
-                bw.write("b: " + b + " guide: " + guide + "\n");
-                if (oldCircle.size() > 0 && b != guide) {
-                    if (beforeGuide) {
-                        newCircle.addFirst(oldCircle.pollLast());
-                    } else {
-                        newCircle.addLast(oldCircle.pollFirst());
-                    }
-                } else if (oldCircle.size() > 0 && b == guide) {
-                    int pop = oldCircle.pollLast();
-                    permut.add(pop);
-                    guide = cardSets[pop - 1];
-                    beforeGuide = false;
-                }
-
-                if (b == guide && oldCircle.size() == 0 && beforeGuide) {
-                    int[] move = { -guide % newCircle.size() };
-                    int[] tempGuide = { guide };
-                    if (move[0] == 0) {
-                        move[0] = newCircle.size();
-                    }
-                    newCircle.stream().forEach((i) -> {
-                        move[0]--;
+                    if (a == guide && oldCircle.size() == 0 && beforeGuide) {
+                        int[] move = { guide % newCircle.size() };
+                        int[] tempGuide = { guide };
                         if (move[0] == 0) {
-                            permut.add(i);
-                            tempGuide[0] = cardSets[i - 1];
+                            move[0] = newCircle.size();
                         }
-                    });
-                    guide = tempGuide[0];
-                    beforeGuide = false;
+                        newCircle.stream().forEach((i) -> {
+                            move[0]--;
+                            if (move[0] == 0) {
+                                permut.add(i);
+                                tempGuide[0] = cardSets[i - 1];
+                            }
+                        });
+                        guide = tempGuide[0];
+                        beforeGuide = false;
+                    }
 
+                    // bw.write("a:" + a + " nextGuide:" + guide + " oldSize:" + oldCircle.size() + " newSize:"
+                    //         + newCircle.size() + " isbefore:" + beforeGuide + "\n");
+                }
+                if (!beforeGuide && oldCircle.size() == 0) {
+                    showDeque(newCircle, bw);
+                    oldCircle.addAll(newCircle);
+                    newCircle.clear();
+                    beforeGuide = true;
+                    continue;
                 }
             }
+            if (guide < 0) {
+                for (int b = -1; b >= -oldCircleSize; b--) {
+                    if (oldCircle.size() > 0 && b != guide) {
+                        if (beforeGuide) {
+                            newCircle.addFirst(oldCircle.pollFirst());
+                        } else {
+                            newCircle.addLast(oldCircle.pollLast());
+                        }
+                    } else if (oldCircle.size() > 0 && b == guide) {
+                        int pop = oldCircle.pollLast();
+                        permut.add(pop);
+                        guide = cardSets[pop - 1];
+                        beforeGuide = false;
+                    }
 
-            newCircle.stream().forEach((i) -> {
-                try {
-                    bw.write(i + " ");
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    if (b == guide && oldCircle.size() == 0 && beforeGuide) {
+                        int[] move = { -guide % newCircle.size() };
+                        int[] tempGuide = { guide };
+                        if (move[0] == 0) {
+                            move[0] = newCircle.size();
+                        }
+                        newCircle.stream().forEach((i) -> {
+                            move[0]--;
+                            if (move[0] == 0) {
+                                permut.add(i);
+                                tempGuide[0] = cardSets[i - 1];
+                            }
+                        });
+                        guide = tempGuide[0];
+                        beforeGuide = false;
+                    }
+                    // bw.write("b:" + b + " nextGuide:" + guide + " oldSize:" + oldCircle.size() + " newSize:"
+                    //         + newCircle.size() + " isbefore:" + beforeGuide + "\n");
+
                 }
-            });
-
-            bw.write(" / last: " + permut.peekLast() + " guide: " + guide + "\n");
-            bw.write("\n");
-            oldCircle = newCircle;
+                if (!beforeGuide && oldCircle.size() == 0) {
+                    showDeque(newCircle, bw);
+                    oldCircle.addAll(newCircle);
+                    newCircle.clear();
+                    beforeGuide = true;
+                    continue;
+                }
+            }
         }
 
-        permut.stream().forEach((i) -> {
+        if(oldCircle.size() ==1) permut.add(oldCircle.poll());
+        showDeque(permut, bw);
+    }
+
+    public static void showDeque(Deque<Integer> deque, BufferedWriter bw) throws IOException {
+        deque.stream().forEach((i) -> {
             try {
                 bw.write(i + " ");
             } catch (IOException e) {
@@ -130,7 +128,6 @@ public class Main {
             }
         });
         bw.write("\n");
-
     }
 
     public static void main(String[] args) throws IOException {
