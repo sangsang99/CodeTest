@@ -46,10 +46,24 @@ public class Main {
         while (oldCircle.size() > 1) {
             int oldCircleSize = oldCircle.size();
             boolean isReverse = isReverse(oldCircle, permut);
-            boolean beforeGuide = true;
+
             int oldGuide = guide;
             int absGuide = Math.abs(guide);
+            boolean beforeGuide = true;
 
+            if ( absGuide >= oldCircleSize && isReverse) {
+                // bw.write("case rv");
+                oldGuide = oldCircle.size() - absGuide % oldCircle.size() + 1;
+            } else if ( absGuide >= oldCircleSize && !isReverse){
+                // bw.write("case right");
+
+                oldGuide = absGuide % oldCircleSize == 0 ? oldCircleSize : absGuide % oldCircleSize;               
+            }
+
+            oldGuide = oldGuide * (guide / absGuide);
+            absGuide = Math.abs(oldGuide);
+            // bw.write(oldGuide + " | ");
+            // showDeque(oldCircle, bw);
             for (int a = 1; a <= oldCircleSize; a++) {
                 if (oldCircle.size() > 0 && a != absGuide) {
                     if (beforeGuide) {
@@ -93,34 +107,37 @@ public class Main {
                     guide = cardSets[pop - 1];
                     beforeGuide = false;
                 }
-                if (oldCircle.size() == 0 && beforeGuide) {
+                // if (oldCircle.size() == 0 && beforeGuide) {
 
-                    int[] move = { absGuide % newCircle.size() > 0 ? absGuide : newCircle.size() };
-                    int[] tempGuide = { absGuide };
-                    isReverse = isReverse(newCircle, permut);
+                //     int[] move = { absGuide % newCircle.size() > 0 ? absGuide : newCircle.size() };
+                //     int[] tempGuide = { absGuide };
+                //     isReverse = isReverse(newCircle, permut);
 
-                    if ((isReverse && oldGuide > 0) || (!isReverse && oldGuide < 0)) {
-                        move[0] = newCircle.size() - absGuide % newCircle.size() + 1;
-                    }
+                //     if ((isReverse && oldGuide > 0) || (!isReverse && oldGuide < 0)) {
+                //         move[0] = newCircle.size() - absGuide % newCircle.size() + 1;
+                //     }
                     
 
-                    while (move[0] > 0) {
-                        newCircle.stream().forEach((i) -> {
-                            if (--move[0] == 0) {
-                                permut.add(i);
-                                newCircle.remove(i);
-                                tempGuide[0] = cardSets[i - 1];
-                            } else if (move[0] < 0) {
-                                newCircle.addFirst(newCircle.pollLast());
-                            }
-                        });
-                    }
+                //     while (move[0] > 0) {
+                //         bw.write(oldCircleSize+" | ");
+                //         showDeque(newCircle, bw);
+                //         newCircle.stream().forEach((i) -> {
+                //             if (--move[0] == 0) {
+                //                 permut.add(i);
+                //                 newCircle.remove(i);
+                //                 tempGuide[0] = cardSets[i - 1];
+                //             } else if (move[0] < 0) {
+                //                 newCircle.addFirst(newCircle.pollLast());
+                //             }
+                //         });
+                //     }
 
-                    guide = tempGuide[0];
-                    beforeGuide = false;
-                }
+                //     guide = tempGuide[0];
+                //     beforeGuide = false;
+                // }
             }
             if (!beforeGuide && oldCircle.size() == 0) {
+
                 oldCircle.addAll(newCircle);
                 newCircle.clear();
                 beforeGuide = true;
