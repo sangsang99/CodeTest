@@ -1,155 +1,52 @@
 import java.io.*;
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Main {
 
-    public static void showDeque(Deque<Integer> deque, BufferedWriter bw) throws IOException {
-        deque.stream().forEach((i) -> {
-            try {
-                bw.write(i + " ");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        bw.write("\n");
-    }
-
-    public static boolean isReverse(Deque<Integer> old, Deque<Integer> ps) throws IOException {
-        if (old.size() < 2) {
-            return false;
-        }
-        int first = old.peekFirst();
-        int pop = ps.peekLast();
-        return first < pop;
-    }
-
     public static void doProcess(BufferedReader br, BufferedWriter bw) throws IOException {
         int circleSize = Integer.parseInt(br.readLine());
+        Map<Integer, Integer> map = new HashMap<>();
         String[] tempCards = br.readLine().split(" ");
-        int[] cardSets = new int[circleSize];
-        for (int i = 0; i < circleSize; i++) {
-            cardSets[i] = Integer.parseInt(tempCards[i]);
-        }
-
-        Deque<Integer> oldCircle = new ArrayDeque<>();
-        Deque<Integer> newCircle = new ArrayDeque<>();
-        Deque<Integer> permut = new ArrayDeque<>();
-
+        boolean[] arrIsPop = new boolean[circleSize+1];
+        Arrays.fill(arrIsPop, false);
         for (int i = 1; i <= circleSize; i++) {
-            oldCircle.add(i);
+            map.put(i, Integer.parseInt(tempCards[i-1]));
         }
 
-        permut.add(oldCircle.pollFirst());
-        int guide = cardSets[permut.peek() - 1];
+        //Start
+        int now = 1;
+        arrIsPop[now] = true;
+        int popCount = 1;
+        int moveTo = map.get(now); 
+        bw.write(now + " ");
 
-        while (oldCircle.size() > 1) {
-            int oldCircleSize = oldCircle.size();
-            boolean isReverse = isReverse(oldCircle, permut);
-
-            int oldGuide = guide;
-            int absGuide = Math.abs(guide);
-            boolean beforeGuide = true;
-
-            if ( absGuide >= oldCircleSize && isReverse) {
-                // bw.write("case rv");
-                oldGuide = oldCircle.size() - absGuide % oldCircle.size() + 1;
-            } else if ( absGuide >= oldCircleSize && !isReverse){
-                // bw.write("case right");
-
-                oldGuide = absGuide % oldCircleSize == 0 ? oldCircleSize : absGuide % oldCircleSize;               
-            }
-
-            oldGuide = oldGuide * (guide / absGuide);
-            absGuide = Math.abs(oldGuide);
-            // bw.write(oldGuide + " | ");
-            // showDeque(oldCircle, bw);
-            for (int a = 1; a <= oldCircleSize; a++) {
-                if (oldCircle.size() > 0 && a != absGuide) {
-                    if (beforeGuide) {
-                        if (isReverse && oldGuide > 0) {
-                            newCircle.addLast(oldCircle.removeLast());
-                        }
-                        if (!isReverse && oldGuide < 0) {
-                            newCircle.addLast(oldCircle.removeLast());
-                        }
-                        if (isReverse && oldGuide < 0) {
-                            newCircle.addLast(oldCircle.removeFirst());
-                        }
-                        if (!isReverse && oldGuide > 0) {
-                            newCircle.addLast(oldCircle.removeFirst());
-                        }
-                    } else {
-                        if (isReverse && oldGuide > 0) {
-                            newCircle.addFirst(oldCircle.removeFirst());
-                        }
-                        if (!isReverse && oldGuide < 0) {
-                            newCircle.addFirst(oldCircle.removeFirst());
-                        }
-                        if (isReverse && oldGuide < 0) {
-                            newCircle.addFirst(oldCircle.removeLast());
-                        }
-                        if (!isReverse && oldGuide > 0) {
-                            newCircle.addFirst(oldCircle.removeLast());
-                        }
-                    }
-                } else if (oldCircle.size() > 0 && a == absGuide && beforeGuide) {
-                    int pop = 0;
-                    if (isReverse && oldGuide > 0)
-                        pop = oldCircle.removeLast();
-                    if (!isReverse && oldGuide < 0)
-                        pop = oldCircle.removeLast();
-                    if (isReverse && oldGuide < 0)
-                        pop = oldCircle.removeFirst();
-                    if (!isReverse && oldGuide > 0)
-                        pop = oldCircle.removeFirst();
-                    permut.add(pop);
-                    guide = cardSets[pop - 1];
-                    beforeGuide = false;
+        while (popCount < circleSize) {
+            while(moveTo != 0){
+                if(moveTo > 0){
+                    now = (now + 1) <= circleSize ? (now + 1) : 1;
+                    if(!arrIsPop[now]){
+                        moveTo--;
+                    } 
                 }
-                // if (oldCircle.size() == 0 && beforeGuide) {
 
-                //     int[] move = { absGuide % newCircle.size() > 0 ? absGuide : newCircle.size() };
-                //     int[] tempGuide = { absGuide };
-                //     isReverse = isReverse(newCircle, permut);
+                if(moveTo < 0){
+                    now = (now - 1) >= 1 ? (now - 1) : circleSize;
+                    if(!arrIsPop[now]){
+                        moveTo++;
+                    }
+                }
 
-                //     if ((isReverse && oldGuide > 0) || (!isReverse && oldGuide < 0)) {
-                //         move[0] = newCircle.size() - absGuide % newCircle.size() + 1;
-                //     }
-                    
-
-                //     while (move[0] > 0) {
-                //         bw.write(oldCircleSize+" | ");
-                //         showDeque(newCircle, bw);
-                //         newCircle.stream().forEach((i) -> {
-                //             if (--move[0] == 0) {
-                //                 permut.add(i);
-                //                 newCircle.remove(i);
-                //                 tempGuide[0] = cardSets[i - 1];
-                //             } else if (move[0] < 0) {
-                //                 newCircle.addFirst(newCircle.pollLast());
-                //             }
-                //         });
-                //     }
-
-                //     guide = tempGuide[0];
-                //     beforeGuide = false;
-                // }
-            }
-            if (!beforeGuide && oldCircle.size() == 0) {
-
-                oldCircle.addAll(newCircle);
-                newCircle.clear();
-                beforeGuide = true;
-                continue;
             }
 
+            arrIsPop[now] = true;
+            popCount++;
+            moveTo = map.get(now); 
+            bw.write(now + " ");
+                
         }
 
-        if (oldCircle.size() == 1) {
-            permut.add(oldCircle.poll());
-        }
-        showDeque(permut, bw);
     }
 
     public static void main(String[] args) throws IOException {
